@@ -3,6 +3,10 @@ import cors from 'cors';
 import multer from 'multer';
 import {v4 as uuidv4} from 'uuid';
 import path from "path";
+import fs from 'fs';
+import {exec} from 'child_process'; // watch out
+import { stderr, stdout } from 'process';
+
 const app = express();
 
 // multer middleware
@@ -15,6 +19,8 @@ const storage = multer.diskStorage({
     }
 });
 
+// multer configuration
+const upload = multer({storage: storage});
 
 app.use(
     cors({
@@ -35,6 +41,37 @@ app.use("/uploads", express.static("uploads"))
 
 app.get('/', function(req, res) {
     res.json({message:"hello world"})
+})
+
+app.post("/upload",upload.single('file'), function(req, res) {
+    
+    const lessonId = uuidv4();
+    const vidoePath = req.file.path;
+    const outputPath = `./uploads/courses/${lessonId}`
+    const hlsPath = `${outputPath}/index.m3u8`
+    console.log("hlsPath",hlsPath)
+
+    if (!fs.existsSync(outputPath)) {
+        fs.mkdirSync(outputPath, { recursive: true });
+    }
+
+    // ffmpeg
+    const ffmpegCommand = `ffmpeg -i ${vidoePath} -codec:v libx264 -codec:a aac -hls_time 10 -hls_playlist_type vod -hls_segment_filename "${outputPath}/segment%03d.ts" -start_number 0 ${hlsPath}`
+    
+    // no queue because of POC, not to be used in production
+    exec(ffmpegCommand, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`exec error : ${error}`);
+        }
+        console.log(`stdout : ${stdout}`);
+        console.log(`stderr : ${stderr}`);
+        const vidoeUrl = `http://localhost:8000/uploads/courses/${lessonId}/index.m3u8`
+        res.json({
+            message: "Video converted to HSL format",
+            vidoeUrl: vidoeUrl,
+            lessonId:lessonId
+        })
+    }) 
 })
 
 app.listen(8000,function(){
