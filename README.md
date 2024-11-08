@@ -93,8 +93,7 @@ The frontend will run on `http://localhost:5173`.
 ## Contribution
 Feel free to fork this repository and make contributions. If you have any suggestions or improvements, create a pull request.
 
-## License
-This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
+
 
 ## Acknowledgments
 - **Video.js** for providing an easy-to-use video player.
