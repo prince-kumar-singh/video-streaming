@@ -90,11 +90,6 @@ The frontend will run on `http://localhost:5173`.
 - The frontend uses **Video.js** with the YouTube plugin to play videos.
 - Supports **HLS** streaming using the `application/x-mpegURL` format for video playback.
 
-## Contribution
-Feel free to fork this repository and make contributions. If you have any suggestions or improvements, create a pull request.
-
-
-
 ## Acknowledgments
 - **Video.js** for providing an easy-to-use video player.
 - **FFmpeg** for video conversion and streaming support.
